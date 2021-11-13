@@ -37,17 +37,23 @@ public class ClickToMove : MonoBehaviour
 
     IEnumerator _ManageCommandQueue()
     {
+        // Chache WaitUntil for waiting until commands Queue has at least one element in it
         WaitUntil waitUntilQueueNotEmpty = new WaitUntil(() => moveCommands.Count > 0);
 
+        // Wait until first move is added to queue
         yield return waitUntilQueueNotEmpty;
 
         while (true)
         {
+            // if no moves left just wait until there are any moves
             if (moveCommands.Count == 0) 
                 yield return waitUntilQueueNotEmpty;
 
+            
             currentMoveCommand = moveCommands.Dequeue();
             currentMoveCommand.Begin();
+            // Update() will Tick() currentMove so we wait until it's completed
+            // to change currentMove with next one
             yield return new WaitUntil(() => currentMoveCommand.isCompleted);
         }
     }
